@@ -1,0 +1,20 @@
+#register>form{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 130px;
+    gap: 25px;
+}
+#register>form input{
+  border: 2px solid black;
+  border-radius: 10px;
+  padding: 10px;
+  background-color: aqua;
+}
+#registerbtn{
+    padding: 10px;
+    border-radius: 10px;
+    font-weight: bolder;
+    background-color: rgb(91, 91, 223);
+}
