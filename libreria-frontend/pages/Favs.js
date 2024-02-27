@@ -10,10 +10,11 @@ const template = () => `
 `;
 
 const getFavs = async () => {
-  const userId = JSON.parse(localStorage.getItem("user")).user._id;
-  const booksData = await fetch(`http://localhost:3000/api/v1/users/${userId}`);
+  const user = JSON.parse(localStorage.getItem("user"));
+  const booksData = await fetch(`http://localhost:3000/api/v1/users/${user._id}`);
   const data = await booksData.json();
   const books = data.favoritos;
+  console.log(books);
   const booksContainer = document.querySelector("#bookscontainer");
   for (const book of books) {
     const li = document.createElement("li");

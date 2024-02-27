@@ -1,30 +1,5 @@
 import ("./books.css")
 
-const handleAddToFavorites = async (bookId) => {
-    try {
-      const userId = JSON.parse(localStorage.getItem("user")).user._id;
-  
-      const response = await fetch(`http://localhost:3000/api/v1/users/${userId}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          favoritos: [bookId], // Puedes ajustar la estructura según tus necesidades.
-        }),
-      });
-      console.log(response)
-      if (response.ok) {
-        // La llamada al backend ha sido exitosa, puedes actualizar la interfaz de usuario o realizar otras acciones necesarias.
-        console.log('Libro añadido a favoritos exitosamente');
-      } else {
-        console.error('Error al añadir libro a favoritos');
-      }
-    } catch (error) {
-      console.error('Error inesperado', error);
-    }
-  };
-
 // Define una arrow function llamada `template` que devuelve un template string.
 const template = () => `
   <section id="books">
@@ -67,6 +42,60 @@ const getBooks = async () => {
     }
   };
 
+
+  const handleAddToFavorites = async (bookId) => {
+    try {
+        const userData = JSON.parse(localStorage.getItem("user"));
+
+        const user = userData.user;
+
+        console.log('User in handleAddToFavorites:', user);
+        console.log('Token:', localStorage.getItem("token"));
+        console.log('Solicitud PUT Cuerpo:', JSON.stringify({ favoritos: [bookId] }));
+
+        if (!user || !user._id) {
+            console.error('Error: User or user._id is undefined');
+            return;
+        }
+
+        console.log('Before fetch in handleAddToFavorites');
+
+        
+
+
+
+        const response = await fetch(`http://localhost:3000/api/v1/users/${user._id}`, {
+            method: "PUT",
+            headers: {
+                "Content-type": "application/json",
+                "Authorization": `Bearer ${localStorage.getItem("token")}`
+            },
+            body: JSON.stringify({
+                favoritos: [bookId],
+            }),
+        });
+
+        // Verifica que la respuesta esté definida antes de intentar acceder a response.json()
+        if (!response) {
+            console.error('Error: No response from server');
+            return;
+        }
+
+        const respuesta = await response.json();
+        console.log(respuesta);
+        localStorage.setItem("user", JSON.stringify(user));
+
+        if (respuesta.ok) {
+            console.log('Libro añadido a favoritos exitosamente');
+        } else {
+            console.error('Error al añadir libro a favoritos');
+        }
+    } catch (error) {
+        console.error('Error inesperado', error);
+    }
+};
+  
+
 // Define una función llamada `Books` que actualiza el contenido de la sección de libros en el DOM
 const Books = () => {
   // Selecciona el elemento 'main' en el DOM y asigna el HTML generado por la función `template`
@@ -78,3 +107,4 @@ const Books = () => {
 
 // Exporta la función `Books` como el valor predeterminado del módulo
 export default Books;
+

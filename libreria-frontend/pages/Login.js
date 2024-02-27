@@ -27,6 +27,7 @@ const loginSubmit = async () => {
   const username = document.querySelector("#username").value;
   const password = document.querySelector("#password").value;
 
+  try{
   // Realiza una solicitud a la API para iniciar sesión
   const data = await fetch("http://localhost:3000/api/v1/users/login", {
     headers: {
@@ -41,27 +42,40 @@ const loginSubmit = async () => {
 
   // Convierte la respuesta a formato JSON
   const dataRes = await data.json();
+  if (dataRes.error) {
+    throw new Error(dataRes.error);
+  }
 
   // Almacena la información del usuario en el localStorage
   localStorage.setItem("user", JSON.stringify(dataRes));
+  localStorage.setItem("token", dataRes.token || dataRes.user.token);
 
   // Muestra una alerta de bienvenida con el nombre de usuario
   alert(`Welcome ${username}`);
 
+  console.log("user",dataRes);
+
   // Llama a la función `Books` para actualizar la sección de libros en la página
   Books();
+}catch{
+  console.error('Error during login:', error.message);
+}
 };
 
 // Define una función llamada `Login` que actualiza el contenido de la sección de inicio de sesión en el DOM
 const Login = () => {
   // Selecciona el elemento 'main' en el DOM y asigna el HTML generado por la función `template`
   document.querySelector("main").innerHTML = template();
+ 
 
+  const loginBtn = document.querySelector("#loginbtn")
   // Agrega un event listener al botón de inicio de sesión para procesar el evento de clic
-  document.querySelector("#loginbtn").addEventListener("click", (ev) => {
+  if(loginBtn){
+  loginBtn.addEventListener("click", (ev) => {
     ev.preventDefault(); // Evita que el formulario recargue la página
     loginSubmit(); // Llama a la función `loginSubmit` para procesar el envío del formulario
   });
+}
 };
 
 // Exporta la función `Login` como el valor predeterminado del módulo
